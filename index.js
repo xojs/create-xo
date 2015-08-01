@@ -29,7 +29,10 @@ module.exports = function (opts, cb) {
 	var s = pkg.scripts = pkg.scripts ? pkg.scripts : {};
 
 	if (s.test && s.test !== DEFAULT_TEST_SCRIPT) {
-		s.test = 'xo && ' + s.test;
+		// don't add if it's already there
+		if (!/^xo /.test(s.test)) {
+			s.test = 'xo && ' + s.test;
+		}
 	} else {
 		s.test = 'xo';
 	}
