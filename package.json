@@ -1,0 +1,40 @@
+{
+  "name": "xo-init",
+  "version": "0.0.0",
+  "description": "Add XO to your project",
+  "license": "MIT",
+  "repository": "sindresorhus/xo-init",
+  "author": {
+    "name": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "node test.js"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "init",
+    "initialize",
+    "add",
+    "create",
+    "setup",
+    "generate",
+    "scaffold",
+    "xo"
+  ],
+  "dependencies": {
+    "has-flag": "^1.0.0",
+    "look-up": "^0.7.1"
+  },
+  "devDependencies": {
+    "ava": "0.0.4",
+    "dot-prop": "^2.2.0",
+    "temp-write": "^1.1.2"
+  }
+}
