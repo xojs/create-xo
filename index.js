@@ -30,7 +30,7 @@ module.exports = function (opts, cb) {
 
 	if (s.test && s.test !== DEFAULT_TEST_SCRIPT) {
 		// don't add if it's already there
-		if (!/^xo /.test(s.test)) {
+		if (!/^xo( |$)/.test(s.test)) {
 			s.test = 'xo && ' + s.test;
 		}
 	} else {

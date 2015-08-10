@@ -51,6 +51,18 @@ test('has default test', function (t) {
 	});
 });
 
+test('has only xo', function (t) {
+	t.plan(3);
+
+	run(t, {
+		scripts: {
+			test: 'xo'
+		}
+	}, function (pkg) {
+		t.assert(dotProp.get(pkg, 'scripts.test') === 'xo');
+	});
+});
+
 test('has test', function (t) {
 	t.plan(3);
 
