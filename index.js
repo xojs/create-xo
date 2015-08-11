@@ -3,7 +3,9 @@ var fs = require('fs');
 var path = require('path');
 var childProcess = require('child_process');
 var lookUp = require('look-up');
-var hasFlag = require('has-flag');
+var minimist = require('minimist');
+var arrify = require('arrify');
+var argv = require('the-argv');
 var DEFAULT_TEST_SCRIPT = 'echo "Error: no test specified" && exit 1';
 
 module.exports = function (opts, cb) {
@@ -15,6 +17,7 @@ module.exports = function (opts, cb) {
 	cb = cb || function () {};
 
 	var cwd = opts.cwd || process.cwd();
+	var args = opts.args || argv();
 
 	var pkg;
 	var pkgPath = lookUp('package.json', {cwd: cwd});
@@ -37,6 +40,24 @@ module.exports = function (opts, cb) {
 		s.test = 'xo';
 	}
 
+	var cli = minimist(args);
+	var unicorn = cli.unicorn;
+
+	delete cli._;
+	delete cli.unicorn;
+	delete cli.init;
+
+	if (cli.env) {
+		cli.envs = arrify(cli.env);
+		delete cli.env;
+	}
+
+	if (Object.keys(cli).length) {
+		pkg.xo = cli;
+	} else if (pkg.xo) {
+		delete pkg.xo;
+	}
+
 	fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, '  ') + '\n');
 
 	childProcess.execFile('npm', ['install', '--save-dev', 'xo'], {cwd: cwd}, function (err) {
@@ -46,7 +67,7 @@ module.exports = function (opts, cb) {
 		}
 
 		// for personal use
-		if (hasFlag('unicorn')) {
+		if (unicorn) {
 			var pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 			pkg.devDependencies.xo = '*';
 			fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, '  ') + '\n');
