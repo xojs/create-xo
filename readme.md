@@ -32,10 +32,29 @@ Default: `process.cwd()`
 
 Current working directory.
 
+#### options.args
+
+Type: `array`  
+Default: CLI arguments *(`process.argv.slice(2)`)*
+
+Options to put in [XO's config](https://www.npmjs.com/package/xo#config) in `package.json`.
+
+For instance, with the arguments `['--space', '--env=node']` the following will be put in `package.json`:
+
+```json
+{
+  "name": "your-awesome-project",
+  "xo": {
+    "space": true,
+    "envs": ["node"]
+  }
+}
+```
+
 
 ## CLI
 
-Install [XO](https://github.com/sindresorhus/xo) globally and run `$ xo --init`.
+Install [XO](https://github.com/sindresorhus/xo) globally and run `$ xo --init [<options>]`.
 
 
 ## License
