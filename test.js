@@ -147,3 +147,34 @@ test('has existing config without cli args', function (t) {
 		t.assert(dotProp.get(pkg, 'xo') === undefined);
 	});
 });
+
+test('has everything covered when it comes to config', function (t) {
+	t.plan(12);
+
+	process.argv = originalArgv.concat([
+		'--init',
+		'--space',
+		'--esnext',
+		'--no-semicolon',
+		'--env=foo',
+		'--env=bar',
+		'--global=foo',
+		'--global=bar',
+		'--ignore=foo',
+		'--ignore=bar'
+	]);
+
+	run(t, {}, function (pkg) {
+		process.argv = originalArgv;
+		t.assert(dotProp.get(pkg, 'scripts.test') === 'xo');
+		t.assert(dotProp.get(pkg, 'xo.space') === true);
+		t.assert(dotProp.get(pkg, 'xo.esnext') === true);
+		t.assert(dotProp.get(pkg, 'xo.semicolon') === false);
+		t.assert(dotProp.get(pkg, 'xo.envs.0') === 'foo');
+		t.assert(dotProp.get(pkg, 'xo.envs.1') === 'bar');
+		t.assert(dotProp.get(pkg, 'xo.globals.0') === 'foo');
+		t.assert(dotProp.get(pkg, 'xo.globals.1') === 'bar');
+		t.assert(dotProp.get(pkg, 'xo.ignores.0') === 'foo');
+		t.assert(dotProp.get(pkg, 'xo.ignores.1') === 'bar');
+	});
+});

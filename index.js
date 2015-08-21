@@ -7,6 +7,7 @@ var minimist = require('minimist');
 var arrify = require('arrify');
 var argv = require('the-argv');
 var DEFAULT_TEST_SCRIPT = 'echo "Error: no test specified" && exit 1';
+var PLURAL_OPTIONS = ['env', 'global', 'ignore'];
 
 module.exports = function (opts, cb) {
 	if (typeof opts !== 'object') {
@@ -47,10 +48,12 @@ module.exports = function (opts, cb) {
 	delete cli.unicorn;
 	delete cli.init;
 
-	if (cli.env) {
-		cli.envs = arrify(cli.env);
-		delete cli.env;
-	}
+	PLURAL_OPTIONS.forEach(function (option) {
+		if (cli[option]) {
+			cli[option + 's'] = arrify(cli[option]);
+			delete cli[option];
+		}
+	});
 
 	if (Object.keys(cli).length) {
 		pkg.xo = cli;
