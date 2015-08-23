@@ -1,6 +1,6 @@
 {
   "name": "xo-init",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Add XO to your project",
   "license": "MIT",
   "repository": "sindresorhus/xo-init",
