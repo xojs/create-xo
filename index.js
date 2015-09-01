@@ -30,7 +30,7 @@ function warnConfigFile(pkgCwd) {
 		return;
 	}
 
-	console.log(files.join(' & ') + ' can probably be deleted now that you\'re using XO.');
+	console.log(files.join(' & ') + ' can probably be deleted now that you\'re using XA.');
 }
 
 module.exports = function (opts, cb) {
@@ -59,11 +59,11 @@ module.exports = function (opts, cb) {
 
 	if (s.test && s.test !== DEFAULT_TEST_SCRIPT) {
 		// don't add if it's already there
-		if (!/^xo( |$)/.test(s.test)) {
-			s.test = 'xo && ' + s.test;
+		if (!/^xa( |$)/.test(s.test)) {
+			s.test = 'xa && ' + s.test;
 		}
 	} else {
-		s.test = 'xo';
+		s.test = 'xa';
 	}
 
 	var cli = minimist(args);
@@ -81,14 +81,14 @@ module.exports = function (opts, cb) {
 	});
 
 	if (Object.keys(cli).length) {
-		pkg.xo = cli;
-	} else if (pkg.xo) {
-		delete pkg.xo;
+		pkg.xa = cli;
+	} else if (pkg.xa) {
+		delete pkg.xa;
 	}
 
 	fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, '  ') + '\n');
 
-	childProcess.execFile('npm', ['install', '--save-dev', 'xo'], {cwd: cwd}, function (err) {
+	childProcess.execFile('npm', ['install', '--save-dev', 'xa'], {cwd: cwd}, function (err) {
 		if (err) {
 			cb(err);
 			return;
@@ -99,7 +99,7 @@ module.exports = function (opts, cb) {
 		// for personal use
 		if (unicorn) {
 			var pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-			pkg.devDependencies.xo = '*';
+			pkg.devDependencies.xa = '*';
 			fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, '  ') + '\n');
 
 			CONFIG_FILES.forEach(function (x) {
