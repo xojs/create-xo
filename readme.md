@@ -1,21 +1,21 @@
-# xo-init [![Build Status](https://travis-ci.org/sindresorhus/xo-init.svg?branch=master)](https://travis-ci.org/sindresorhus/xo-init)
+# xa-init
 
-> Add [XO](https://github.com/sindresorhus/xo) to your project
+> Add [xa](https://github.com/AXA-GROUP-SOLUTIONS/xa) to your project
 
 
 ## Install
 
 ```
-$ npm install --save xo-init
+$ npm install --save xa-init
 ```
 
 
 ## Usage
 
 ```js
-var xoInit = require('xo-init');
+var xaInit = require('xa-init');
 
-xoInit(function (err) {
+xaInit(function (err) {
 	console.log('done');
 });
 ```
@@ -23,7 +23,7 @@ xoInit(function (err) {
 
 ## API
 
-### xoInit([options], [callback])
+### xaInit([options], [callback])
 
 #### options.cwd
 
@@ -37,14 +37,14 @@ Current working directory.
 Type: `array`  
 Default: CLI arguments *(`process.argv.slice(2)`)*
 
-Options to put in [XO's config](https://www.npmjs.com/package/xo#config) in `package.json`.
+Options to put in [xa's config](https://github.com/AXA-GROUP-SOLUTIONS/xa#config) in `package.json`.
 
 For instance, with the arguments `['--space', '--env=node']` the following will be put in `package.json`:
 
 ```json
 {
   "name": "your-awesome-project",
-  "xo": {
+  "xa": {
     "space": true,
     "envs": ["node"]
   }
@@ -54,7 +54,7 @@ For instance, with the arguments `['--space', '--env=node']` the following will 
 
 ## CLI
 
-Install [XO](https://github.com/sindresorhus/xo) globally and run `$ xo --init [<options>]`.
+Install [xa](https://github.com/AXA-GROUP-SOLUTIONS/xa) globally and run `$ xa --init [<options>]`.
 
 
 ## License

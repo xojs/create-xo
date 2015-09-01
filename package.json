@@ -1,19 +1,19 @@
 {
-  "name": "xo-init",
-  "version": "0.2.0",
-  "description": "Add XO to your project",
+  "name": "xa-init",
+  "version": "0.2.1",
+  "description": "Add xa to your project",
   "license": "MIT",
-  "repository": "sindresorhus/xo-init",
+  "repository": "https://github.com/AXA-GROUP-SOLUTIONS/xa-init",
   "author": {
-    "name": "Sindre Sorhus",
-    "email": "sindresorhus@gmail.com",
-    "url": "sindresorhus.com"
+    "name": "AXA Group Solutions",
+    "email": "github@axaxx.nu",
+    "url": "http://www.axa-groupsolutions.com/"
   },
   "engines": {
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "xo && node test.js"
+    "test": "xa && node test.js"
   },
   "files": [
     "index.js"
@@ -26,7 +26,7 @@
     "setup",
     "generate",
     "scaffold",
-    "xo"
+    "xa"
   ],
   "dependencies": {
     "arrify": "^1.0.0",
@@ -40,6 +40,6 @@
     "ava": "0.0.4",
     "dot-prop": "^2.2.0",
     "temp-write": "^1.1.2",
-    "xo": "*"
+    "xa": "*"
   }
 }
