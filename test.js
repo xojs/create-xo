@@ -1,9 +1,9 @@
 'use strict';
 var path = require('path');
 var fs = require('fs');
-var test = require('ava');
 var tempWrite = require('temp-write');
 var dotProp = require('dot-prop');
+var test = require('ava');
 var fn = require('./');
 
 var originalArgv = process.argv.slice();
@@ -14,9 +14,9 @@ function run(t, pkg, cb) {
 	fn({
 		cwd: path.dirname(filepath)
 	}, function (err) {
-		t.assert(!err, err);
+		t.error(err);
 		var pkg2 = JSON.parse(fs.readFileSync(filepath, 'utf8'));
-		t.assert(dotProp.get(pkg2, 'devDependencies.xo'));
+		t.true(dotProp.get(pkg2, 'devDependencies.xo'));
 		cb(pkg2);
 	});
 }
@@ -25,8 +25,8 @@ test('empty package.json', function (t) {
 	t.plan(4);
 
 	run(t, {}, function (pkg) {
-		t.assert(dotProp.get(pkg, 'scripts.test') === 'xo');
-		t.assert(dotProp.get(pkg, 'xo') === undefined);
+		t.is(dotProp.get(pkg, 'scripts.test'), 'xo');
+		t.is(dotProp.get(pkg, 'xo'), undefined);
 	});
 });
 
@@ -38,8 +38,8 @@ test('has scripts', function (t) {
 			start: ''
 		}
 	}, function (pkg) {
-		t.assert(dotProp.get(pkg, 'scripts.test') === 'xo');
-		t.assert(dotProp.get(pkg, 'xo') === undefined);
+		t.is(dotProp.get(pkg, 'scripts.test'), 'xo');
+		t.is(dotProp.get(pkg, 'xo'), undefined);
 	});
 });
 
@@ -51,8 +51,8 @@ test('has default test', function (t) {
 			test: 'echo "Error: no test specified" && exit 1'
 		}
 	}, function (pkg) {
-		t.assert(dotProp.get(pkg, 'scripts.test') === 'xo');
-		t.assert(dotProp.get(pkg, 'xo') === undefined);
+		t.is(dotProp.get(pkg, 'scripts.test'), 'xo');
+		t.is(dotProp.get(pkg, 'xo'), undefined);
 	});
 });
 
@@ -64,8 +64,8 @@ test('has only xo', function (t) {
 			test: 'xo'
 		}
 	}, function (pkg) {
-		t.assert(dotProp.get(pkg, 'scripts.test') === 'xo');
-		t.assert(dotProp.get(pkg, 'xo') === undefined);
+		t.is(dotProp.get(pkg, 'scripts.test'), 'xo');
+		t.is(dotProp.get(pkg, 'xo'), undefined);
 	});
 });
 
@@ -77,8 +77,8 @@ test('has test', function (t) {
 			test: 'ava'
 		}
 	}, function (pkg) {
-		t.assert(dotProp.get(pkg, 'scripts.test') === 'xo && ava');
-		t.assert(dotProp.get(pkg, 'xo') === undefined);
+		t.is(dotProp.get(pkg, 'scripts.test'), 'xo && ava');
+		t.is(dotProp.get(pkg, 'xo'), undefined);
 	});
 });
 
@@ -93,8 +93,8 @@ test('has cli args', function (t) {
 		}
 	}, function (pkg) {
 		process.argv = originalArgv;
-		t.assert(dotProp.get(pkg, 'scripts.test') === 'xo');
-		t.assert(dotProp.get(pkg, 'xo.space') === true);
+		t.is(dotProp.get(pkg, 'scripts.test'), 'xo');
+		t.is(dotProp.get(pkg, 'xo.space'), true);
 	});
 });
 
@@ -109,9 +109,9 @@ test('has cli args and test', function (t) {
 		}
 	}, function (pkg) {
 		process.argv = originalArgv;
-		t.assert(dotProp.get(pkg, 'scripts.test') === 'xo && ava');
-		t.assert(dotProp.get(pkg, 'xo.envs.0') === 'node');
-		t.assert(dotProp.get(pkg, 'xo.envs.1') === 'browser');
+		t.is(dotProp.get(pkg, 'scripts.test'), 'xo && ava');
+		t.is(dotProp.get(pkg, 'xo.envs.0'), 'node');
+		t.is(dotProp.get(pkg, 'xo.envs.1'), 'browser');
 	});
 });
 
@@ -126,9 +126,9 @@ test('has cli args and existing config', function (t) {
 		}
 	}, function (pkg) {
 		process.argv = originalArgv;
-		t.assert(dotProp.get(pkg, 'scripts.test') === 'xo');
-		t.assert(dotProp.get(pkg, 'xo.space') === true);
-		t.assert(dotProp.get(pkg, 'xo.esnext') === undefined);
+		t.is(dotProp.get(pkg, 'scripts.test'), 'xo');
+		t.is(dotProp.get(pkg, 'xo.space'), true);
+		t.is(dotProp.get(pkg, 'xo.esnext'), undefined);
 	});
 });
 
@@ -143,8 +143,8 @@ test('has existing config without cli args', function (t) {
 		}
 	}, function (pkg) {
 		process.argv = originalArgv;
-		t.assert(dotProp.get(pkg, 'scripts.test') === 'xo');
-		t.assert(dotProp.get(pkg, 'xo') === undefined);
+		t.is(dotProp.get(pkg, 'scripts.test'), 'xo');
+		t.is(dotProp.get(pkg, 'xo'), undefined);
 	});
 });
 
@@ -166,15 +166,15 @@ test('has everything covered when it comes to config', function (t) {
 
 	run(t, {}, function (pkg) {
 		process.argv = originalArgv;
-		t.assert(dotProp.get(pkg, 'scripts.test') === 'xo');
-		t.assert(dotProp.get(pkg, 'xo.space') === true);
-		t.assert(dotProp.get(pkg, 'xo.esnext') === true);
-		t.assert(dotProp.get(pkg, 'xo.semicolon') === false);
-		t.assert(dotProp.get(pkg, 'xo.envs.0') === 'foo');
-		t.assert(dotProp.get(pkg, 'xo.envs.1') === 'bar');
-		t.assert(dotProp.get(pkg, 'xo.globals.0') === 'foo');
-		t.assert(dotProp.get(pkg, 'xo.globals.1') === 'bar');
-		t.assert(dotProp.get(pkg, 'xo.ignores.0') === 'foo');
-		t.assert(dotProp.get(pkg, 'xo.ignores.1') === 'bar');
+		t.is(dotProp.get(pkg, 'scripts.test'), 'xo');
+		t.is(dotProp.get(pkg, 'xo.space'), true);
+		t.is(dotProp.get(pkg, 'xo.esnext'), true);
+		t.is(dotProp.get(pkg, 'xo.semicolon'), false);
+		t.is(dotProp.get(pkg, 'xo.envs.0'), 'foo');
+		t.is(dotProp.get(pkg, 'xo.envs.1'), 'bar');
+		t.is(dotProp.get(pkg, 'xo.globals.0'), 'foo');
+		t.is(dotProp.get(pkg, 'xo.globals.1'), 'bar');
+		t.is(dotProp.get(pkg, 'xo.ignores.0'), 'foo');
+		t.is(dotProp.get(pkg, 'xo.ignores.1'), 'bar');
 	});
 });

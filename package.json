@@ -13,7 +13,7 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "xo && node test.js"
+    "test": "xo && ava"
   },
   "files": [
     "index.js"
@@ -25,6 +25,7 @@
     "create",
     "setup",
     "generate",
+    "generator",
     "scaffold",
     "xo"
   ],
@@ -33,11 +34,11 @@
     "exclude": "^1.0.0",
     "look-up": "^0.7.1",
     "minimist": "^1.1.3",
-    "path-exists": "^1.0.0",
+    "path-exists": "^2.0.0",
     "the-argv": "^1.0.0"
   },
   "devDependencies": {
-    "ava": "0.0.4",
+    "ava": "*",
     "dot-prop": "^2.2.0",
     "temp-write": "^1.1.2",
     "xo": "*"
