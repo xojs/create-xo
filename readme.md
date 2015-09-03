@@ -15,7 +15,7 @@ $ npm install --save xo-init
 ```js
 var xoInit = require('xo-init');
 
-xoInit(function (err) {
+xoInit().then(function () {
 	console.log('done');
 });
 ```
@@ -23,16 +23,20 @@ xoInit(function (err) {
 
 ## API
 
-### xoInit([options], [callback])
+### xoInit([options])
 
-#### options.cwd
+Returns a promise.
+
+#### options
+
+#### cwd
 
 Type: `string`  
 Default: `'.'`
 
 Current working directory.
 
-#### options.args
+#### args
 
 Type: `array`  
 Default: CLI arguments *(`process.argv.slice(2)`)*
@@ -43,18 +47,18 @@ For instance, with the arguments `['--space', '--env=node']` the following will 
 
 ```json
 {
-  "name": "awesome-package",
-  "xo": {
-    "space": true,
-    "envs": ["node"]
-  }
+	"name": "awesome-package",
+	"xo": {
+		"space": true,
+		"envs": ["node"]
+	}
 }
 ```
 
 
 ## CLI
 
-Install [XO](https://github.com/sindresorhus/xo) globally and run `$ xo --init [<options>]`.
+Install XO globally `$ npm install --global xo` and run `$ xo --init [<options>]`.
 
 
 ## License

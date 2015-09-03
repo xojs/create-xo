@@ -36,13 +36,8 @@ function warnConfigFile(pkgCwd) {
 	console.log(files.join(' & ') + ' can probably be deleted now that you\'re using XO.');
 }
 
-module.exports = function (opts, cb) {
-	if (typeof opts !== 'object') {
-		cb = opts;
-		opts = {};
-	}
-
-	cb = cb || function () {};
+module.exports = function (opts) {
+	opts = opts || {};
 
 	var ret = readPkgUp.sync({
 		cwd: opts.cwd,
