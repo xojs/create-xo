@@ -28,7 +28,7 @@ xoInit(function (err) {
 #### options.cwd
 
 Type: `string`  
-Default: `process.cwd()`
+Default: `'.'`
 
 Current working directory.
 
@@ -43,7 +43,7 @@ For instance, with the arguments `['--space', '--env=node']` the following will 
 
 ```json
 {
-  "name": "your-awesome-project",
+  "name": "awesome-package",
   "xo": {
     "space": true,
     "envs": ["node"]

@@ -2,11 +2,14 @@
 var fs = require('fs');
 var path = require('path');
 var childProcess = require('child_process');
-var lookUp = require('look-up');
 var minimist = require('minimist');
 var arrify = require('arrify');
 var argv = require('the-argv');
 var pathExists = require('path-exists');
+var readPkgUp = require('read-pkg-up');
+var writePkg = require('write-pkg');
+var Promise = require('pinkie-promise');
+var pify = require('pify');
 var DEFAULT_TEST_SCRIPT = 'echo "Error: no test specified" && exit 1';
 
 var PLURAL_OPTIONS = [
@@ -41,19 +44,12 @@ module.exports = function (opts, cb) {
 
 	cb = cb || function () {};
 
-	var cwd = opts.cwd || process.cwd();
-	var args = opts.args || argv();
-
-	var pkg;
-	var pkgPath = lookUp('package.json', {cwd: cwd});
-
-	if (pkgPath) {
-		pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-	} else {
-		pkgPath = path.resolve(cwd, 'package.json');
-		pkg = {};
-	}
-
+	var ret = readPkgUp.sync({
+		cwd: opts.cwd,
+		normalize: false
+	});
+	var pkg = ret.pkg;
+	var pkgPath = ret.path;
 	var pkgCwd = path.dirname(pkgPath);
 	var s = pkg.scripts = pkg.scripts ? pkg.scripts : {};
 
@@ -66,7 +62,7 @@ module.exports = function (opts, cb) {
 		s.test = 'xo';
 	}
 
-	var cli = minimist(args);
+	var cli = minimist(opts.args || argv());
 	var unicorn = cli.unicorn;
 
 	delete cli._;
@@ -86,21 +82,18 @@ module.exports = function (opts, cb) {
 		delete pkg.xo;
 	}
 
-	fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, '  ') + '\n');
+	writePkg.sync(pkgPath, pkg);
 
-	childProcess.execFile('npm', ['install', '--save-dev', 'xo'], {cwd: cwd}, function (err) {
-		if (err) {
-			cb(err);
-			return;
-		}
-
+	return pify(childProcess.execFile, Promise)('npm', ['install', '--save-dev', 'xo'], {
+		cwd: pkgCwd
+	}).then(function () {
 		warnConfigFile(pkgCwd);
 
 		// for personal use
 		if (unicorn) {
 			var pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 			pkg.devDependencies.xo = '*';
-			fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, '  ') + '\n');
+			writePkg.sync(pkgPath, pkg);
 
 			CONFIG_FILES.forEach(function (x) {
 				try {
@@ -108,7 +101,5 @@ module.exports = function (opts, cb) {
 				} catch (err) {}
 			});
 		}
-
-		cb();
 	});
 };
