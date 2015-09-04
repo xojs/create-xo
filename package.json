@@ -34,7 +34,7 @@
     "arrify": "^1.0.0",
     "minimist": "^1.1.3",
     "path-exists": "^2.0.0",
-    "pify": "^1.1.1",
+    "pify": "^2.0.0",
     "pinkie-promise": "^1.0.0",
     "read-pkg-up": "^1.0.1",
     "the-argv": "^1.0.0",
