@@ -21,7 +21,9 @@ var PLURAL_OPTIONS = [
 var CONFIG_FILES = [
 	'.jshintrc',
 	'.eslintrc',
-	'.jscsrc'
+	'.jscsrc',
+	'.jscs.json',
+	'.jscs.yaml'
 ];
 
 function warnConfigFile(pkgCwd) {
