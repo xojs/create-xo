@@ -81,7 +81,7 @@ module.exports = function (opts) {
 
 	writePkg.sync(pkgPath, pkg);
 
-	return pify(childProcess.execFile, Promise)('npm', ['install', '--save-dev', 'xo'], {
+	return pify(childProcess.exec, Promise)('npm install --save-dev xo', {
 		cwd: pkgCwd
 	}).then(function () {
 		warnConfigFile(pkgCwd);
