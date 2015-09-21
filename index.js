@@ -45,8 +45,8 @@ module.exports = function (opts) {
 		cwd: opts.cwd,
 		normalize: false
 	});
-	var pkg = ret.pkg;
-	var pkgPath = ret.path;
+	var pkg = ret.pkg || {};
+	var pkgPath = ret.path || path.resolve(opts.cwd || '', 'package.json');
 	var pkgCwd = path.dirname(pkgPath);
 	var s = pkg.scripts = pkg.scripts ? pkg.scripts : {};
 
