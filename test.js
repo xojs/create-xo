@@ -1,97 +1,95 @@
-'use strict';
-var path = require('path');
-var fs = require('fs');
-var tempWrite = require('temp-write');
-var dotProp = require('dot-prop');
-var test = require('ava');
-var fn = require('./');
-var originalArgv = process.argv.slice();
-var get = dotProp.get;
+import path from 'path';
+import fs from 'fs';
+import tempWrite from 'temp-write';
+import dotProp from 'dot-prop';
+import test from 'ava';
+import fn from './';
+
+const originalArgv = process.argv.slice();
+const get = dotProp.get;
 
 function run(pkg) {
-	var filepath = tempWrite.sync(JSON.stringify(pkg), 'package.json');
+	const filepath = tempWrite.sync(JSON.stringify(pkg), 'package.json');
 
 	return fn({
 		cwd: path.dirname(filepath),
 		skipInstall: true
-	}).then(function () {
-		return JSON.parse(fs.readFileSync(filepath, 'utf8'));
-	});
+	}).then(() => JSON.parse(fs.readFileSync(filepath, 'utf8')));
 }
 
-test('empty package.json', function (t) {
-	return run({}).then(function (pkg) {
+test('empty package.json', t => {
+	return run({}).then(pkg => {
 		t.is(get(pkg, 'scripts.test'), 'xo');
 		t.is(get(pkg, 'xo'), undefined);
 	});
 });
 
-test('has scripts', function (t) {
+test('has scripts', t => {
 	return run({
 		scripts: {
 			start: ''
 		}
-	}).then(function (pkg) {
+	}).then(pkg => {
 		t.is(get(pkg, 'scripts.test'), 'xo');
 		t.is(get(pkg, 'xo'), undefined);
 	});
 });
 
-test('has default test', function (t) {
+test('has default test', t => {
 	return run({
 		scripts: {
 			test: 'echo "Error: no test specified" && exit 1'
 		}
-	}).then(function (pkg) {
+	}).then(pkg => {
 		t.is(get(pkg, 'scripts.test'), 'xo');
 		t.is(get(pkg, 'xo'), undefined);
 	});
 });
 
-test('has only xo', function (t) {
+test('has only xo', t => {
 	return run({
 		scripts: {
 			test: 'xo'
 		}
-	}).then(function (pkg) {
+	}).then(pkg => {
 		t.is(get(pkg, 'scripts.test'), 'xo');
 		t.is(get(pkg, 'xo'), undefined);
 	});
 });
 
-test('has test', function (t) {
+test('has test', t => {
 	return run({
 		scripts: {
 			test: 'ava'
 		}
-	}).then(function (pkg) {
+	}).then(pkg => {
 		t.is(get(pkg, 'scripts.test'), 'xo && ava');
 		t.is(get(pkg, 'xo'), undefined);
 	});
 });
 
-test('has cli args', function (t) {
+test('has cli args', t => {
 	process.argv = originalArgv.concat(['--init', '--space']);
 
 	return run({
 		scripts: {
 			start: ''
 		}
-	}).then(function (pkg) {
+	}).then(pkg => {
 		process.argv = originalArgv;
 		t.is(get(pkg, 'scripts.test'), 'xo');
 		t.is(get(pkg, 'xo.space'), true);
 	});
 });
 
-test('has cli args and test', function (t) {
+test('has cli args and test', t => {
 	process.argv = originalArgv.concat(['--init', '--env=node', '--env=browser']);
 
 	return run({
 		scripts: {
 			test: 'ava'
 		}
-	}).then(function (pkg) {
+	}).then(pkg => {
 		process.argv = originalArgv;
 		t.is(get(pkg, 'scripts.test'), 'xo && ava');
 		t.is(get(pkg, 'xo.envs.0'), 'node');
@@ -99,14 +97,14 @@ test('has cli args and test', function (t) {
 	});
 });
 
-test('has cli args and existing config', function (t) {
+test('has cli args and existing config', t => {
 	process.argv = originalArgv.concat(['--init', '--space']);
 
 	return run({
 		xo: {
 			esnext: true
 		}
-	}).then(function (pkg) {
+	}).then(pkg => {
 		process.argv = originalArgv;
 		t.is(get(pkg, 'scripts.test'), 'xo');
 		t.is(get(pkg, 'xo.space'), true);
@@ -114,21 +112,21 @@ test('has cli args and existing config', function (t) {
 	});
 });
 
-test('has existing config without cli args', function (t) {
+test('has existing config without cli args', t => {
 	process.argv = originalArgv.concat(['--init']);
 
 	return run({
 		xo: {
 			esnext: true
 		}
-	}).then(function (pkg) {
+	}).then(pkg => {
 		process.argv = originalArgv;
 		t.is(get(pkg, 'scripts.test'), 'xo');
 		t.is(get(pkg, 'xo'), undefined);
 	});
 });
 
-test('has everything covered when it comes to config', function (t) {
+test('has everything covered when it comes to config', t => {
 	process.argv = originalArgv.concat([
 		'--init',
 		'--space',
@@ -142,7 +140,7 @@ test('has everything covered when it comes to config', function (t) {
 		'--ignore=bar'
 	]);
 
-	return run({}).then(function (pkg) {
+	return run({}).then(pkg => {
 		process.argv = originalArgv;
 		t.is(get(pkg, 'scripts.test'), 'xo');
 		t.is(get(pkg, 'xo.space'), true);
@@ -157,12 +155,12 @@ test('has everything covered when it comes to config', function (t) {
 	});
 });
 
-test('installs the XO dependency', function (t) {
-	var filepath = tempWrite.sync(JSON.stringify({}), 'package.json');
+test('installs the XO dependency', t => {
+	const filepath = tempWrite.sync(JSON.stringify({}), 'package.json');
 
 	return fn({
 		cwd: path.dirname(filepath)
-	}).then(function () {
+	}).then(() => {
 		t.ok(get(JSON.parse(fs.readFileSync(filepath, 'utf8')), 'devDependencies.xo'));
 	});
 });
