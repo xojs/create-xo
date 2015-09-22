@@ -81,9 +81,7 @@ module.exports = function (opts) {
 
 	writePkg.sync(pkgPath, pkg);
 
-	return pify(childProcess.exec, Promise)('npm install --save-dev xo', {
-		cwd: pkgCwd
-	}).then(function () {
+	var post = function () {
 		warnConfigFile(pkgCwd);
 
 		// for personal use
@@ -98,5 +96,10 @@ module.exports = function (opts) {
 				} catch (err) {}
 			});
 		}
-	});
+	};
+
+	return opts.skipInstall ? Promise.resolve(post) :
+		pify(childProcess.exec, Promise)('npm install --save-dev xo', {
+			cwd: pkgCwd
+		}).then(post);
 };
