@@ -19,11 +19,12 @@ var PLURAL_OPTIONS = [
 ];
 
 var CONFIG_FILES = [
-	'.jshintrc',
-	'.eslintrc',
-	'.eslintrc.json',
-	'.eslintrc.yml',
+	'.eslintrc.js',
 	'.eslintrc.yaml',
+	'.eslintrc.yml',
+	'.eslintrc.json',
+	'.eslintrc',
+	'.jshintrc',
 	'.jscsrc',
 	'.jscs.json',
 	'.jscs.yaml'
