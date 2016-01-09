@@ -11,8 +11,6 @@ var writePkg = require('write-pkg');
 var Promise = require('pinkie-promise');
 var pify = require('pify');
 
-var DEFAULT_TEST_SCRIPT = 'echo "Error: no test specified" && exit 1';
-
 var PLURAL_OPTIONS = [
 	'env',
 	'global',
@@ -55,13 +53,10 @@ module.exports = function (opts) {
 	var pkgCwd = path.dirname(pkgPath);
 	var s = pkg.scripts = pkg.scripts ? pkg.scripts : {};
 
-	if (s.test && s.test !== DEFAULT_TEST_SCRIPT) {
-		// don't add if it's already there
-		if (!/^xo( |$)/.test(s.test)) {
-			s.test = 'xo && ' + s.test;
-		}
-	} else {
-		s.test = 'xo';
+	if (!s.pretest) {
+		s.pretest = 'xo';
+	} else if (s.pretest && s.pretest.indexOf('xo') < 0) {
+		s.pretest = 'xo && ' + s.pretest;
 	}
 
 	var cli = minimist(opts.args || argv());
