@@ -161,6 +161,6 @@ test('installs the XO dependency', t => {
 	return fn({
 		cwd: path.dirname(filepath)
 	}).then(() => {
-		t.ok(get(JSON.parse(fs.readFileSync(filepath, 'utf8')), 'devDependencies.xo'));
+		t.truthy(get(JSON.parse(fs.readFileSync(filepath, 'utf8')), 'devDependencies.xo'));
 	});
 });
