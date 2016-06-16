@@ -10,6 +10,7 @@ var readPkgUp = require('read-pkg-up');
 var writePkg = require('write-pkg');
 var Promise = require('pinkie-promise');
 var pify = require('pify');
+
 var DEFAULT_TEST_SCRIPT = 'echo "Error: no test specified" && exit 1';
 
 var PLURAL_OPTIONS = [
