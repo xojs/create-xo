@@ -1,12 +1,11 @@
 import path from 'path';
 import fs from 'fs';
 import tempWrite from 'temp-write';
-import dotProp from 'dot-prop';
+import {get} from 'dot-prop';
 import test from 'ava';
 import fn from './';
 
 const originalArgv = process.argv.slice();
-const get = dotProp.get;
 
 function run(pkg) {
 	const filepath = tempWrite.sync(JSON.stringify(pkg), 'package.json');
@@ -19,7 +18,7 @@ function run(pkg) {
 
 test('empty package.json', t => {
 	return run({}).then(pkg => {
-		t.is(get(pkg, 'scripts.test'), 'xo');
+		t.is(get(pkg, 'scripts.pretest'), 'xo');
 		t.is(get(pkg, 'xo'), undefined);
 	});
 });
@@ -30,7 +29,7 @@ test('has scripts', t => {
 			start: ''
 		}
 	}).then(pkg => {
-		t.is(get(pkg, 'scripts.test'), 'xo');
+		t.is(get(pkg, 'scripts.pretest'), 'xo');
 		t.is(get(pkg, 'xo'), undefined);
 	});
 });
@@ -41,7 +40,7 @@ test('has default test', t => {
 			test: 'echo "Error: no test specified" && exit 1'
 		}
 	}).then(pkg => {
-		t.is(get(pkg, 'scripts.test'), 'xo');
+		t.is(get(pkg, 'scripts.pretest'), 'xo');
 		t.is(get(pkg, 'xo'), undefined);
 	});
 });
@@ -49,21 +48,32 @@ test('has default test', t => {
 test('has only xo', t => {
 	return run({
 		scripts: {
-			test: 'xo'
+			pretest: 'xo'
 		}
 	}).then(pkg => {
-		t.is(get(pkg, 'scripts.test'), 'xo');
+		t.is(get(pkg, 'scripts.pretest'), 'xo');
 		t.is(get(pkg, 'xo'), undefined);
 	});
 });
 
-test('has test', t => {
+test('has existing pretest', t => {
 	return run({
 		scripts: {
-			test: 'ava'
+			pretest: 'ava'
 		}
 	}).then(pkg => {
-		t.is(get(pkg, 'scripts.test'), 'xo && ava');
+		t.is(get(pkg, 'scripts.pretest'), 'xo && ava');
+		t.is(get(pkg, 'xo'), undefined);
+	});
+});
+
+test('has xo with others in pretest', t => {
+	return run({
+		scripts: {
+			pretest: 'ava && xo'
+		}
+	}).then(pkg => {
+		t.is(get(pkg, 'scripts.pretest'), 'ava && xo');
 		t.is(get(pkg, 'xo'), undefined);
 	});
 });
@@ -77,21 +87,21 @@ test('has cli args', t => {
 		}
 	}).then(pkg => {
 		process.argv = originalArgv;
-		t.is(get(pkg, 'scripts.test'), 'xo');
+		t.is(get(pkg, 'scripts.pretest'), 'xo');
 		t.is(get(pkg, 'xo.space'), true);
 	});
 });
 
-test('has cli args and test', t => {
+test('has cli args and pretest', t => {
 	process.argv = originalArgv.concat(['--init', '--env=node', '--env=browser']);
 
 	return run({
 		scripts: {
-			test: 'ava'
+			pretest: 'ava'
 		}
 	}).then(pkg => {
 		process.argv = originalArgv;
-		t.is(get(pkg, 'scripts.test'), 'xo && ava');
+		t.is(get(pkg, 'scripts.pretest'), 'xo && ava');
 		t.is(get(pkg, 'xo.envs.0'), 'node');
 		t.is(get(pkg, 'xo.envs.1'), 'browser');
 	});
@@ -106,7 +116,7 @@ test('has cli args and existing config', t => {
 		}
 	}).then(pkg => {
 		process.argv = originalArgv;
-		t.is(get(pkg, 'scripts.test'), 'xo');
+		t.is(get(pkg, 'scripts.pretest'), 'xo');
 		t.is(get(pkg, 'xo.space'), true);
 		t.is(get(pkg, 'xo.esnext'), undefined);
 	});
@@ -121,7 +131,7 @@ test('has existing config without cli args', t => {
 		}
 	}).then(pkg => {
 		process.argv = originalArgv;
-		t.is(get(pkg, 'scripts.test'), 'xo');
+		t.is(get(pkg, 'scripts.pretest'), 'xo');
 		t.is(get(pkg, 'xo'), undefined);
 	});
 });
@@ -142,7 +152,7 @@ test('has everything covered when it comes to config', t => {
 
 	return run({}).then(pkg => {
 		process.argv = originalArgv;
-		t.is(get(pkg, 'scripts.test'), 'xo');
+		t.is(get(pkg, 'scripts.pretest'), 'xo');
 		t.is(get(pkg, 'xo.space'), true);
 		t.is(get(pkg, 'xo.esnext'), true);
 		t.is(get(pkg, 'xo.semicolon'), false);
