@@ -13,9 +13,9 @@ $ npm install --save xo-init
 ## Usage
 
 ```js
-var xoInit = require('xo-init');
+const xoInit = require('xo-init');
 
-xoInit().then(function () {
+xoInit().then(() => {
 	console.log('done');
 });
 ```
@@ -25,20 +25,20 @@ xoInit().then(function () {
 
 ### xoInit([options])
 
-Returns a promise.
+Returns a `Promise`.
 
 #### options
 
 #### cwd
 
-Type: `string`  
-Default: `'.'`
+Type: `string`<br>
+Default: `process.cwd()`
 
 Current working directory.
 
 #### args
 
-Type: `array`  
+Type: `Array`<br>
 Default: CLI arguments *(`process.argv.slice(2)`)*
 
 Options to put in [XO's config](https://www.npmjs.com/package/xo#config) in `package.json`.
@@ -63,4 +63,4 @@ Install XO globally `$ npm install --global xo` and run `$ xo --init [<options>]
 
 ## License
 
-MIT © [Sindre Sorhus](http://sindresorhus.com)
+MIT © [Sindre Sorhus](https://sindresorhus.com)

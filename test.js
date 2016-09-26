@@ -3,130 +3,131 @@ import fs from 'fs';
 import tempWrite from 'temp-write';
 import dotProp from 'dot-prop';
 import test from 'ava';
-import fn from './';
+import m from './';
 
 const originalArgv = process.argv.slice();
 const get = dotProp.get;
 
-function run(pkg) {
+async function run(pkg) {
 	const filepath = tempWrite.sync(JSON.stringify(pkg), 'package.json');
 
-	return fn({
+	await m({
 		cwd: path.dirname(filepath),
 		skipInstall: true
-	}).then(() => JSON.parse(fs.readFileSync(filepath, 'utf8')));
+	});
+
+	return JSON.parse(fs.readFileSync(filepath, 'utf8'));
 }
 
-test('empty package.json', t => {
-	return run({}).then(pkg => {
-		t.is(get(pkg, 'scripts.test'), 'xo');
-		t.is(get(pkg, 'xo'), undefined);
-	});
+test('empty package.json', async t => {
+	const pkg = await run({});
+	t.is(get(pkg, 'scripts.test'), 'xo');
+	t.is(get(pkg, 'xo'), undefined);
 });
 
-test('has scripts', t => {
-	return run({
+test('has scripts', async t => {
+	const pkg = await run({
 		scripts: {
 			start: ''
 		}
-	}).then(pkg => {
-		t.is(get(pkg, 'scripts.test'), 'xo');
-		t.is(get(pkg, 'xo'), undefined);
 	});
+
+	t.is(get(pkg, 'scripts.test'), 'xo');
+	t.is(get(pkg, 'xo'), undefined);
 });
 
-test('has default test', t => {
-	return run({
+test('has default test', async t => {
+	const pkg = await run({
 		scripts: {
 			test: 'echo "Error: no test specified" && exit 1'
 		}
-	}).then(pkg => {
-		t.is(get(pkg, 'scripts.test'), 'xo');
-		t.is(get(pkg, 'xo'), undefined);
 	});
+
+	t.is(get(pkg, 'scripts.test'), 'xo');
+	t.is(get(pkg, 'xo'), undefined);
 });
 
-test('has only xo', t => {
-	return run({
+test('has only xo', async t => {
+	const pkg = await run({
 		scripts: {
 			test: 'xo'
 		}
-	}).then(pkg => {
-		t.is(get(pkg, 'scripts.test'), 'xo');
-		t.is(get(pkg, 'xo'), undefined);
 	});
+
+	t.is(get(pkg, 'scripts.test'), 'xo');
+	t.is(get(pkg, 'xo'), undefined);
 });
 
-test('has test', t => {
-	return run({
+test('has test', async t => {
+	const pkg = await run({
 		scripts: {
 			test: 'ava'
 		}
-	}).then(pkg => {
-		t.is(get(pkg, 'scripts.test'), 'xo && ava');
-		t.is(get(pkg, 'xo'), undefined);
 	});
+
+	t.is(get(pkg, 'scripts.test'), 'xo && ava');
+	t.is(get(pkg, 'xo'), undefined);
 });
 
-test('has cli args', t => {
+test('has cli args', async t => {
 	process.argv = originalArgv.concat(['--init', '--space']);
 
-	return run({
+	const pkg = await run({
 		scripts: {
 			start: ''
 		}
-	}).then(pkg => {
-		process.argv = originalArgv;
-		t.is(get(pkg, 'scripts.test'), 'xo');
-		t.is(get(pkg, 'xo.space'), true);
 	});
+
+	process.argv = originalArgv;
+	t.is(get(pkg, 'scripts.test'), 'xo');
+	t.is(get(pkg, 'xo.space'), true);
 });
 
-test('has cli args and test', t => {
+test('has cli args and test', async t => {
 	process.argv = originalArgv.concat(['--init', '--env=node', '--env=browser']);
 
-	return run({
+	const pkg = await run({
 		scripts: {
 			test: 'ava'
 		}
-	}).then(pkg => {
-		process.argv = originalArgv;
-		t.is(get(pkg, 'scripts.test'), 'xo && ava');
-		t.is(get(pkg, 'xo.envs.0'), 'node');
-		t.is(get(pkg, 'xo.envs.1'), 'browser');
 	});
+
+	process.argv = originalArgv;
+	t.is(get(pkg, 'scripts.test'), 'xo && ava');
+	t.is(get(pkg, 'xo.envs.0'), 'node');
+	t.is(get(pkg, 'xo.envs.1'), 'browser');
 });
 
-test('has cli args and existing config', t => {
+test('has cli args and existing config', async t => {
 	process.argv = originalArgv.concat(['--init', '--space']);
 
-	return run({
+	const pkg = await run({
 		xo: {
 			esnext: true
 		}
-	}).then(pkg => {
-		process.argv = originalArgv;
-		t.is(get(pkg, 'scripts.test'), 'xo');
-		t.is(get(pkg, 'xo.space'), true);
-		t.is(get(pkg, 'xo.esnext'), undefined);
 	});
+
+	process.argv = originalArgv;
+	t.is(get(pkg, 'scripts.test'), 'xo');
+	t.is(get(pkg, 'xo.space'), true);
+	t.is(get(pkg, 'xo.esnext'), undefined);
 });
 
-test('has existing config without cli args', t => {
+test('has existing config without cli args', async t => {
 	process.argv = originalArgv.concat(['--init']);
 
-	return run({
+	const pkg = await run({
 		xo: {
 			esnext: true
 		}
-	}).then(pkg => {
-		process.argv = originalArgv;
-		t.is(get(pkg, 'scripts.test'), 'xo');
-		t.is(get(pkg, 'xo'), undefined);
 	});
+
+	process.argv = originalArgv;
+	t.is(get(pkg, 'scripts.test'), 'xo');
+	t.is(get(pkg, 'xo'), undefined);
 });
 
-test('has everything covered when it comes to config', t => {
+test('has everything covered when it comes to config', async t => {
 	process.argv = originalArgv.concat([
 		'--init',
 		'--space',
@@ -140,27 +141,23 @@ test('has everything covered when it comes to config', t => {
 		'--ignore=bar'
 	]);
 
-	return run({}).then(pkg => {
-		process.argv = originalArgv;
-		t.is(get(pkg, 'scripts.test'), 'xo');
-		t.is(get(pkg, 'xo.space'), true);
-		t.is(get(pkg, 'xo.esnext'), true);
-		t.is(get(pkg, 'xo.semicolon'), false);
-		t.is(get(pkg, 'xo.envs.0'), 'foo');
-		t.is(get(pkg, 'xo.envs.1'), 'bar');
-		t.is(get(pkg, 'xo.globals.0'), 'foo');
-		t.is(get(pkg, 'xo.globals.1'), 'bar');
-		t.is(get(pkg, 'xo.ignores.0'), 'foo');
-		t.is(get(pkg, 'xo.ignores.1'), 'bar');
-	});
+	const pkg = await run({});
+
+	process.argv = originalArgv;
+	t.is(get(pkg, 'scripts.test'), 'xo');
+	t.is(get(pkg, 'xo.space'), true);
+	t.is(get(pkg, 'xo.esnext'), true);
+	t.is(get(pkg, 'xo.semicolon'), false);
+	t.is(get(pkg, 'xo.envs.0'), 'foo');
+	t.is(get(pkg, 'xo.envs.1'), 'bar');
+	t.is(get(pkg, 'xo.globals.0'), 'foo');
+	t.is(get(pkg, 'xo.globals.1'), 'bar');
+	t.is(get(pkg, 'xo.ignores.0'), 'foo');
+	t.is(get(pkg, 'xo.ignores.1'), 'bar');
 });
 
-test('installs the XO dependency', t => {
+test('installs the XO dependency', async t => {
 	const filepath = tempWrite.sync(JSON.stringify({}), 'package.json');
-
-	return fn({
-		cwd: path.dirname(filepath)
-	}).then(() => {
-		t.truthy(get(JSON.parse(fs.readFileSync(filepath, 'utf8')), 'devDependencies.xo'));
-	});
+	await m({cwd: path.dirname(filepath)});
+	t.truthy(get(JSON.parse(fs.readFileSync(filepath, 'utf8')), 'devDependencies.xo'));
 });

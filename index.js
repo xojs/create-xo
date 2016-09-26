@@ -1,25 +1,23 @@
 'use strict';
-var fs = require('fs');
-var path = require('path');
-var childProcess = require('child_process');
-var minimist = require('minimist');
-var arrify = require('arrify');
-var argv = require('the-argv');
-var pathExists = require('path-exists');
-var readPkgUp = require('read-pkg-up');
-var writePkg = require('write-pkg');
-var Promise = require('pinkie-promise');
-var pify = require('pify');
+const fs = require('fs');
+const path = require('path');
+const minimist = require('minimist');
+const arrify = require('arrify');
+const argv = require('the-argv');
+const pathExists = require('path-exists');
+const readPkgUp = require('read-pkg-up');
+const writePkg = require('write-pkg');
+const execa = require('execa');
 
-var DEFAULT_TEST_SCRIPT = 'echo "Error: no test specified" && exit 1';
+const DEFAULT_TEST_SCRIPT = 'echo "Error: no test specified" && exit 1';
 
-var PLURAL_OPTIONS = [
+const PLURAL_OPTIONS = [
 	'env',
 	'global',
 	'ignore'
 ];
 
-var CONFIG_FILES = [
+const CONFIG_FILES = [
 	'.eslintrc.js',
 	'.eslintrc.yaml',
 	'.eslintrc.yml',
@@ -32,46 +30,44 @@ var CONFIG_FILES = [
 ];
 
 function warnConfigFile(pkgCwd) {
-	var files = CONFIG_FILES.filter(function (x) {
-		return pathExists.sync(path.join(pkgCwd, x));
-	});
+	const files = CONFIG_FILES.filter(x => pathExists.sync(path.join(pkgCwd, x)));
 
 	if (files.length === 0) {
 		return;
 	}
 
-	console.log(files.join(' & ') + ' can probably be deleted now that you\'re using XO.');
+	console.log(`${files.join(' & ')} can probably be deleted now that you're using XO.`);
 }
 
-module.exports = function (opts) {
+module.exports = opts => {
 	opts = opts || {};
 
-	var ret = readPkgUp.sync({
+	const ret = readPkgUp.sync({
 		cwd: opts.cwd,
 		normalize: false
 	});
-	var pkg = ret.pkg || {};
-	var pkgPath = ret.path || path.resolve(opts.cwd || '', 'package.json');
-	var pkgCwd = path.dirname(pkgPath);
-	var s = pkg.scripts = pkg.scripts ? pkg.scripts : {};
+	const pkg = ret.pkg || {};
+	const pkgPath = ret.path || path.resolve(opts.cwd || '', 'package.json');
+	const pkgCwd = path.dirname(pkgPath);
+	const s = pkg.scripts = pkg.scripts ? pkg.scripts : {};
 
 	if (s.test && s.test !== DEFAULT_TEST_SCRIPT) {
 		// don't add if it's already there
 		if (!/^xo( |$)/.test(s.test)) {
-			s.test = 'xo && ' + s.test;
+			s.test = `xo && ${s.test}`;
 		}
 	} else {
 		s.test = 'xo';
 	}
 
-	var cli = minimist(opts.args || argv());
-	var unicorn = cli.unicorn;
+	const cli = minimist(opts.args || argv());
+	const unicorn = cli.unicorn;
 
 	delete cli._;
 	delete cli.unicorn;
 	delete cli.init;
 
-	PLURAL_OPTIONS.forEach(function (option) {
+	PLURAL_OPTIONS.forEach(option => {
 		if (cli[option]) {
 			cli[option + 's'] = arrify(cli[option]);
 			delete cli[option];
@@ -86,16 +82,16 @@ module.exports = function (opts) {
 
 	writePkg.sync(pkgPath, pkg);
 
-	var post = function () {
+	const post = () => {
 		warnConfigFile(pkgCwd);
 
 		// for personal use
 		if (unicorn) {
-			var pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+			const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 			pkg.devDependencies.xo = '*';
 			writePkg.sync(pkgPath, pkg);
 
-			CONFIG_FILES.forEach(function (x) {
+			CONFIG_FILES.forEach(x => {
 				try {
 					fs.unlinkSync(path.join(pkgCwd, x));
 				} catch (err) {}
@@ -103,8 +99,5 @@ module.exports = function (opts) {
 		}
 	};
 
-	return opts.skipInstall ? Promise.resolve(post) :
-		pify(childProcess.exec, Promise)('npm install --save-dev xo', {
-			cwd: pkgCwd
-		}).then(post);
+	return opts.skipInstall ? Promise.resolve(post) : execa('npm', ['install', '--save-dev', 'xo'], {cwd: pkgCwd}).then(post);
 };
