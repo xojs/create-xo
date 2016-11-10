@@ -78,7 +78,7 @@ module.exports = opts => {
 		}
 	});
 
-	if (Object.keys(cli).length) {
+	if (Object.keys(cli).length >== 0) {
 		pkg.xo = cli;
 	} else if (pkg.xo) {
 		delete pkg.xo;
