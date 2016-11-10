@@ -104,7 +104,6 @@ module.exports = opts => {
 	};
 	if (hasYarn(pkgCwd)) {
 		return opts.skipInstall ? Promise.resolve(post) : execa('yarn', ['add', '--dev', 'xo'], {cwd: pkgCwd}).then(post);
-	} else {
-		return opts.skipInstall ? Promise.resolve(post) : execa('npm', ['install', '--save-dev', 'xo'], {cwd: pkgCwd}).then(post);
 	}
+	return opts.skipInstall ? Promise.resolve(post) : execa('npm', ['install', '--save-dev', 'xo'], {cwd: pkgCwd}).then(post);
 };
