@@ -39,9 +39,7 @@ function warnConfigFile(pkgCwd) {
 	console.log(`${files.join(' & ')} can probably be deleted now that you're using XO.`);
 }
 
-function hasYarn(pkgCwd) {
-	return pathExists.sync(path.join(pkgCwd, 'yarn.lock'));
-}
+const hasYarn = pkgCwd => pathExists.sync(path.join(pkgCwd, 'yarn.lock'));
 
 module.exports = opts => {
 	opts = opts || {};
@@ -102,8 +100,14 @@ module.exports = opts => {
 			});
 		}
 	};
-	if (hasYarn(pkgCwd)) {
-		return opts.skipInstall ? Promise.resolve(post) : execa('yarn', ['add', '--dev', 'xo'], {cwd: pkgCwd}).then(post);
+
+	if (opts.skipInstall) {
+		return Promise.resolve(post);
 	}
-	return opts.skipInstall ? Promise.resolve(post) : execa('npm', ['install', '--save-dev', 'xo'], {cwd: pkgCwd}).then(post);
+
+	if (hasYarn(pkgCwd)) {
+		return execa('yarn', ['add', '--dev', 'xo'], {cwd: pkgCwd}).then(post);
+	}
+
+	return execa('npm', ['install', '--save-dev', 'xo'], {cwd: pkgCwd}).then(post);
 };
