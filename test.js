@@ -165,5 +165,5 @@ test('installs the XO dependency', async t => {
 test('installs via yarn if there\'s a lockfile', async t => {
 	const yarnLock = tempWrite.sync('', 'yarn.lock');
 	await m({cwd: path.dirname(yarnLock)});
-	t.not(fs.readFileSync(yarnLock, 'utf8'), '');
+	t.regex(fs.readFileSync(yarnLock, 'utf8'), /xo/);
 });
