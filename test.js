@@ -161,3 +161,10 @@ test('installs the XO dependency', async t => {
 	await m({cwd: path.dirname(filepath)});
 	t.truthy(get(JSON.parse(fs.readFileSync(filepath, 'utf8')), 'devDependencies.xo'));
 });
+
+test('installs via yarn if there\'s a lockfile', async t => {
+	const yarnLock = tempWrite.sync('', 'yarn.lock');
+	await m({cwd: path.dirname(yarnLock)});
+	console.log(fs.readFileSync(yarnLock, 'utf8'));
+	t.not('', fs.readFileSync(yarnLock, 'utf8'));
+});
