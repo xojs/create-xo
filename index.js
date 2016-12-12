@@ -8,6 +8,7 @@ const pathExists = require('path-exists');
 const readPkgUp = require('read-pkg-up');
 const writePkg = require('write-pkg');
 const execa = require('execa');
+const hasYarn = require('has-yarn');
 
 const DEFAULT_TEST_SCRIPT = 'echo "Error: no test specified" && exit 1';
 
@@ -38,8 +39,6 @@ function warnConfigFile(pkgCwd) {
 
 	console.log(`${files.join(' & ')} can probably be deleted now that you're using XO.`);
 }
-
-const hasYarn = pkgCwd => pathExists.sync(path.join(pkgCwd, 'yarn.lock'));
 
 module.exports = opts => {
 	opts = opts || {};
