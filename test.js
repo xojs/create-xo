@@ -5,6 +5,9 @@ import dotProp from 'dot-prop';
 import test from 'ava';
 import m from './';
 
+// Remove --color flag passed on from ava
+process.argv = process.argv.filter(x => x !== '--color');
+
 const originalArgv = process.argv.slice();
 const get = dotProp.get;
 

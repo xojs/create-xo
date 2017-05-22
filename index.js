@@ -50,16 +50,18 @@ module.exports = opts => {
 	const pkg = ret.pkg || {};
 	const pkgPath = ret.path || path.resolve(opts.cwd || '', 'package.json');
 	const pkgCwd = path.dirname(pkgPath);
-	const s = pkg.scripts = pkg.scripts ? pkg.scripts : {};
+	const s = pkg.scripts || {};
 
 	if (s.test && s.test !== DEFAULT_TEST_SCRIPT) {
-		// don't add if it's already there
+		// Don't add if it's already there
 		if (!/^xo( |$)/.test(s.test)) {
 			s.test = `xo && ${s.test}`;
 		}
 	} else {
 		s.test = 'xo';
 	}
+
+	pkg.scripts = s;
 
 	const cli = minimist(opts.args || argv());
 	const unicorn = cli.unicorn;
@@ -86,7 +88,7 @@ module.exports = opts => {
 	const post = () => {
 		warnConfigFile(pkgCwd);
 
-		// for personal use
+		// For personal use
 		if (unicorn) {
 			const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 			pkg.devDependencies.xo = '*';
