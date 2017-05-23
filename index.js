@@ -30,6 +30,19 @@ const CONFIG_FILES = [
 	'.jscs.yaml'
 ];
 
+function buildTestScript(test) {
+	if (test && test !== DEFAULT_TEST_SCRIPT) {
+		// Don't add if it's already there
+		if (!/^xo( |$)/.test(test)) {
+			return `xo && ${test}`;
+		}
+
+		return test;
+	}
+
+	return 'xo';
+}
+
 function warnConfigFile(pkgCwd) {
 	const files = CONFIG_FILES.filter(x => pathExists.sync(path.join(pkgCwd, x)));
 
@@ -50,18 +63,9 @@ module.exports = opts => {
 	const pkg = ret.pkg || {};
 	const pkgPath = ret.path || path.resolve(opts.cwd || '', 'package.json');
 	const pkgCwd = path.dirname(pkgPath);
-	const s = pkg.scripts || {};
 
-	if (s.test && s.test !== DEFAULT_TEST_SCRIPT) {
-		// Don't add if it's already there
-		if (!/^xo( |$)/.test(s.test)) {
-			s.test = `xo && ${s.test}`;
-		}
-	} else {
-		s.test = 'xo';
-	}
-
-	pkg.scripts = s;
+	pkg.scripts = pkg.scripts || {};
+	pkg.scripts.test = buildTestScript(pkg.scripts.test);
 
 	const cli = minimist(opts.args || argv());
 	const unicorn = cli.unicorn;
