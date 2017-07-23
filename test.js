@@ -3,9 +3,10 @@ import fs from 'fs';
 import tempWrite from 'temp-write';
 import dotProp from 'dot-prop';
 import test from 'ava';
-import m from './';
+import m from '.';
 
-// Remove --color flag passed on from ava
+// Remove --color flag passed on from AVA
+// TODO: Remove this when fixed in AVA
 process.argv = process.argv.filter(x => x !== '--color');
 
 const originalArgv = process.argv.slice();

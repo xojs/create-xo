@@ -6,7 +6,7 @@
 ## Install
 
 ```
-$ npm install --save xo-init
+$ npm install xo-init
 ```
 
 
