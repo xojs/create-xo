@@ -1,6 +1,6 @@
-# xo-init [![Build Status](https://travis-ci.org/sindresorhus/xo-init.svg?branch=master)](https://travis-ci.org/sindresorhus/xo-init)
+# xo-init [![Build Status](https://travis-ci.org/xojs/xo-init.svg?branch=master)](https://travis-ci.org/xojs/xo-init)
 
-> Add [XO](https://github.com/sindresorhus/xo) to your project
+> Add [XO](https://github.com/xojs/xo) to your project
 
 
 ## Install
