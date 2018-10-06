@@ -111,7 +111,12 @@ module.exports = opts => {
 	}
 
 	if (hasYarn(pkgCwd)) {
-		return execa('yarn', ['add', '--dev', 'xo'], {cwd: pkgCwd}).then(post);
+		return execa('yarn', ['add', '--dev', 'xo'], {cwd: pkgCwd})
+			.then(post)
+			.catch(() => {
+				const msg = "This project uses Yarn but you don't seem to have Yarn installed.\nRun 'npm install --global yarn' to install it."
+				return console.log(msg);
+			});
 	}
 
 	return execa('npm', ['install', '--save-dev', 'xo'], {cwd: pkgCwd}).then(post);
