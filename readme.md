@@ -15,9 +15,10 @@ $ npm install xo-init
 ```js
 const xoInit = require('xo-init');
 
-xoInit().then(() => {
-	console.log('done');
-});
+(async () => {
+	await xoInit();
+	console.log('Done');
+})();
 ```
 
 
@@ -50,7 +51,9 @@ For instance, with the arguments `['--space', '--env=node']` the following will 
 	"name": "awesome-package",
 	"xo": {
 		"space": true,
-		"envs": ["node"]
+		"envs": [
+			"node"
+		]
 	}
 }
 ```

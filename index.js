@@ -44,7 +44,7 @@ function buildTestScript(test) {
 }
 
 function warnConfigFile(pkgCwd) {
-	const files = CONFIG_FILES.filter(x => pathExists.sync(path.join(pkgCwd, x)));
+	const files = CONFIG_FILES.filter(file => pathExists.sync(path.join(pkgCwd, file)));
 
 	if (files.length === 0) {
 		return;
@@ -53,9 +53,7 @@ function warnConfigFile(pkgCwd) {
 	console.log(`${files.join(' & ')} can probably be deleted now that you're using XO.`);
 }
 
-module.exports = opts => {
-	opts = opts || {};
-
+module.exports = (opts = {}) => {
 	const ret = readPkgUp.sync({
 		cwd: opts.cwd,
 		normalize: false
@@ -68,18 +66,18 @@ module.exports = opts => {
 	pkg.scripts.test = buildTestScript(pkg.scripts.test);
 
 	const cli = minimist(opts.args || argv());
-	const unicorn = cli.unicorn;
+	const {unicorn} = cli;
 
 	delete cli._;
 	delete cli.unicorn;
 	delete cli.init;
 
-	PLURAL_OPTIONS.forEach(option => {
+	for (const option of PLURAL_OPTIONS) {
 		if (cli[option]) {
-			cli[option + 's'] = arrify(cli[option]);
+			cli[`${option}s`] = arrify(cli[option]);
 			delete cli[option];
 		}
-	});
+	}
 
 	if (Object.keys(cli).length > 0) {
 		pkg.xo = cli;
@@ -98,11 +96,11 @@ module.exports = opts => {
 			pkg.devDependencies.xo = '*';
 			writePkg.sync(pkgPath, pkg);
 
-			CONFIG_FILES.forEach(x => {
+			for (const file of CONFIG_FILES) {
 				try {
-					fs.unlinkSync(path.join(pkgCwd, x));
-				} catch (err) {}
-			});
+					fs.unlinkSync(path.join(pkgCwd, file));
+				} catch (_) {}
+			}
 		}
 	};
 
