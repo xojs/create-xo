@@ -109,7 +109,7 @@ module.exports = (opts = {}) => {
 	}
 
 	if (hasYarn(pkgCwd)) {
-		return execa('yarn', ['add', '--dev', '--use-workspaces', 'xo'], {cwd: pkgCwd}).then(post);
+		return execa('yarn', ['add', '--dev', '--ignore-workspace-root-check', 'xo'], {cwd: pkgCwd}).then(post);
 	}
 
 	return execa('npm', ['install', '--save-dev', 'xo'], {cwd: pkgCwd}).then(post);
