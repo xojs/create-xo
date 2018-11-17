@@ -10,7 +10,7 @@ import m from '.';
 process.argv = process.argv.filter(x => x !== '--color');
 
 const originalArgv = process.argv.slice();
-const get = dotProp.get;
+const {get} = dotProp;
 
 async function run(pkg) {
 	const filepath = tempWrite.sync(JSON.stringify(pkg), 'package.json');
