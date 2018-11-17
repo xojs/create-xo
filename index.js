@@ -112,8 +112,9 @@ module.exports = (opts = {}) => {
 		return execa('yarn', ['add', '--dev', '--ignore-workspace-root-check', 'xo'], {cwd: pkgCwd})
 			.then(post)
 			.catch(error => {
-				if (error.syscall === 'spawn yarn') {
-					return console.error('This project uses Yarn but you don\'t seem to have Yarn installed.\nRun \'npm install --global yarn\' to install it.');
+				if (error.code === 'ENOENT') {
+					console.error('This project uses Yarn but you don\'t seem to have Yarn installed.\nRun \'npm install --global yarn\' to install it.');
+					return;
 				}
 				throw error;
 			});
