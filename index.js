@@ -80,9 +80,7 @@ module.exports = (opts = {}) => {
 	}
 
 	if (Object.keys(cli).length > 0) {
-		pkg.xo = cli;
-	} else if (pkg.xo) {
-		delete pkg.xo;
+		pkg.xo = Object.assign({}, pkg.xo, cli);
 	}
 
 	writePkg.sync(pkgPath, pkg);

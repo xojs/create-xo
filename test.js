@@ -114,7 +114,7 @@ test('has cli args and existing config', async t => {
 	process.argv = originalArgv;
 	t.is(get(pkg, 'scripts.test'), 'xo');
 	t.is(get(pkg, 'xo.space'), true);
-	t.is(get(pkg, 'xo.esnext'), undefined);
+	t.is(get(pkg, 'xo.esnext'), true);
 });
 
 test('has existing config without cli args', async t => {
@@ -128,7 +128,7 @@ test('has existing config without cli args', async t => {
 
 	process.argv = originalArgv;
 	t.is(get(pkg, 'scripts.test'), 'xo');
-	t.is(get(pkg, 'xo'), undefined);
+	t.deepEqual(get(pkg, 'xo'), {esnext: true});
 });
 
 test('has everything covered when it comes to config', async t => {
