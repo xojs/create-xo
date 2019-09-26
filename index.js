@@ -1,5 +1,4 @@
 'use strict';
-const fs = require('fs');
 const path = require('path');
 const minimist = require('minimist');
 const arrify = require('arrify');
@@ -30,7 +29,7 @@ const CONFIG_FILES = [
 	'.jscs.yaml'
 ];
 
-function buildTestScript(test) {
+const buildTestScript = test => {
 	if (test && test !== DEFAULT_TEST_SCRIPT) {
 		// Don't add if it's already there
 		if (!/^xo( |$)/.test(test)) {
@@ -41,36 +40,32 @@ function buildTestScript(test) {
 	}
 
 	return 'xo';
-}
+};
 
-function warnConfigFile(pkgCwd) {
-	const files = CONFIG_FILES.filter(file => pathExists.sync(path.join(pkgCwd, file)));
+const warnConfigFile = packageCwd => {
+	const files = CONFIG_FILES.filter(file => pathExists.sync(path.join(packageCwd, file)));
 
 	if (files.length === 0) {
 		return;
 	}
 
 	console.log(`${files.join(' & ')} can probably be deleted now that you're using XO.`);
-}
+};
 
-module.exports = (opts = {}) => {
-	const ret = readPkgUp.sync({
-		cwd: opts.cwd,
+module.exports = async (options = {}) => {
+	const packageResult = readPkgUp.sync({
+		cwd: options.cwd,
 		normalize: false
-	});
-	const pkg = ret.pkg || {};
-	const pkgPath = ret.path || path.resolve(opts.cwd || '', 'package.json');
-	const pkgCwd = path.dirname(pkgPath);
+	}) || {};
+	const packageJson = packageResult.package || {};
+	const packagePath = packageResult.path || path.resolve(options.cwd || '', 'package.json');
+	const packageCwd = path.dirname(packagePath);
 
-	pkg.scripts = pkg.scripts || {};
-	pkg.scripts.test = buildTestScript(pkg.scripts.test);
+	packageJson.scripts = packageJson.scripts || {};
+	packageJson.scripts.test = buildTestScript(packageJson.scripts.test);
 
-	const cli = minimist(opts.args || argv());
-	const {unicorn} = cli;
-
+	const cli = minimist(options.args || argv());
 	delete cli._;
-	delete cli.unicorn;
-	delete cli.init;
 
 	for (const option of PLURAL_OPTIONS) {
 		if (cli[option]) {
@@ -80,43 +75,36 @@ module.exports = (opts = {}) => {
 	}
 
 	if (Object.keys(cli).length > 0) {
-		pkg.xo = Object.assign({}, pkg.xo, cli);
+		packageJson.xo = {...packageJson.xo, ...cli};
 	}
 
-	writePkg.sync(pkgPath, pkg);
+	writePkg.sync(packagePath, packageJson);
 
 	const post = () => {
-		warnConfigFile(pkgCwd);
-
-		// For personal use
-		if (unicorn) {
-			const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-			pkg.devDependencies.xo = '*';
-			writePkg.sync(pkgPath, pkg);
-
-			for (const file of CONFIG_FILES) {
-				try {
-					fs.unlinkSync(path.join(pkgCwd, file));
-				} catch (_) {}
-			}
-		}
+		warnConfigFile(packageCwd);
 	};
 
-	if (opts.skipInstall) {
-		return Promise.resolve(post);
+	if (options.skipInstall) {
+		post();
+		return;
 	}
 
-	if (hasYarn(pkgCwd)) {
-		return execa('yarn', ['add', '--dev', '--ignore-workspace-root-check', 'xo'], {cwd: pkgCwd})
-			.then(post)
-			.catch(error => {
-				if (error.code === 'ENOENT') {
-					console.error('This project uses Yarn but you don\'t seem to have Yarn installed.\nRun \'npm install --global yarn\' to install it.');
-					return;
-				}
-				throw error;
-			});
+	if (hasYarn(packageCwd)) {
+		try {
+			await execa('yarn', ['add', '--dev', '--ignore-workspace-root-check', 'xo'], {cwd: packageCwd});
+			post();
+		} catch (error) {
+			if (error.code === 'ENOENT') {
+				console.error('This project uses Yarn but you don\'t seem to have Yarn installed.\nRun `npm install --global yarn` to install it.');
+				return;
+			}
+
+			throw error;
+		}
+
+		return;
 	}
 
-	return execa('npm', ['install', '--save-dev', 'xo'], {cwd: pkgCwd}).then(post);
+	await execa('npm', ['install', '--save-dev', 'xo'], {cwd: packageCwd});
+	post();
 };

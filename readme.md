@@ -24,11 +24,13 @@ const xoInit = require('xo-init');
 
 ## API
 
-### xoInit([options])
+### xoInit(options?)
 
 Returns a `Promise`.
 
 #### options
+
+Type: `object`
 
 #### cwd
 
@@ -39,7 +41,7 @@ Current working directory.
 
 #### args
 
-Type: `Array`<br>
+Type: `string[]`<br>
 Default: CLI arguments *(`process.argv.slice(2)`)*
 
 Options to put in [XO's config](https://www.npmjs.com/package/xo#config) in `package.json`.
@@ -62,8 +64,3 @@ For instance, with the arguments `['--space', '--env=node']` the following will 
 ## CLI
 
 Install XO globally `$ npm install --global xo` and run `$ xo --init [<options>]`.
-
-
-## License
-
-MIT © [Sindre Sorhus](https://sindresorhus.com)

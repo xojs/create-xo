@@ -3,7 +3,7 @@ import fs from 'fs';
 import tempWrite from 'temp-write';
 import dotProp from 'dot-prop';
 import test from 'ava';
-import m from '.';
+import xoInit from '.';
 
 // Remove --color flag passed on from AVA
 // TODO: Remove this when fixed in AVA
@@ -15,7 +15,7 @@ const {get} = dotProp;
 async function run(pkg) {
 	const filepath = tempWrite.sync(JSON.stringify(pkg), 'package.json');
 
-	await m({
+	await xoInit({
 		cwd: path.dirname(filepath),
 		skipInstall: true
 	});
@@ -74,7 +74,7 @@ test('has test', async t => {
 });
 
 test('has cli args', async t => {
-	process.argv = originalArgv.concat(['--init', '--space']);
+	process.argv = originalArgv.concat(['--space']);
 
 	const pkg = await run({
 		scripts: {
@@ -88,7 +88,7 @@ test('has cli args', async t => {
 });
 
 test('has cli args and test', async t => {
-	process.argv = originalArgv.concat(['--init', '--env=node', '--env=browser']);
+	process.argv = originalArgv.concat(['--env=node', '--env=browser']);
 
 	const pkg = await run({
 		scripts: {
@@ -103,7 +103,7 @@ test('has cli args and test', async t => {
 });
 
 test('has cli args and existing config', async t => {
-	process.argv = originalArgv.concat(['--init', '--space']);
+	process.argv = originalArgv.concat(['--space']);
 
 	const pkg = await run({
 		xo: {
@@ -118,7 +118,7 @@ test('has cli args and existing config', async t => {
 });
 
 test('has existing config without cli args', async t => {
-	process.argv = originalArgv.concat(['--init']);
+	process.argv = originalArgv;
 
 	const pkg = await run({
 		xo: {
@@ -133,7 +133,6 @@ test('has existing config without cli args', async t => {
 
 test('has everything covered when it comes to config', async t => {
 	process.argv = originalArgv.concat([
-		'--init',
 		'--space',
 		'--esnext',
 		'--no-semicolon',
@@ -162,12 +161,12 @@ test('has everything covered when it comes to config', async t => {
 
 test('installs the XO dependency', async t => {
 	const filepath = tempWrite.sync(JSON.stringify({}), 'package.json');
-	await m({cwd: path.dirname(filepath)});
+	await xoInit({cwd: path.dirname(filepath)});
 	t.truthy(get(JSON.parse(fs.readFileSync(filepath, 'utf8')), 'devDependencies.xo'));
 });
 
 test('installs via yarn if there\'s a lockfile', async t => {
 	const yarnLock = tempWrite.sync('', 'yarn.lock');
-	await m({cwd: path.dirname(yarnLock)});
+	await xoInit({cwd: path.dirname(yarnLock)});
 	t.regex(fs.readFileSync(yarnLock, 'utf8'), /xo/);
 });
