@@ -15,8 +15,10 @@
 	"scripts": {
 		"test": "xo && ava"
 	},
+	"bin": "cli.js",
 	"files": [
-		"index.js"
+		"index.js",
+		"cli.js"
 	],
 	"keywords": [
 		"init",
