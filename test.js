@@ -3,11 +3,7 @@ import fs from 'fs';
 import tempWrite from 'temp-write';
 import dotProp from 'dot-prop';
 import test from 'ava';
-import xoInit from '.';
-
-// Remove --color flag passed on from AVA
-// TODO: Remove this when fixed in AVA
-process.argv = process.argv.filter(x => x !== '--color');
+import createXo from '.';
 
 const originalArgv = process.argv.slice();
 const {get} = dotProp;
@@ -15,7 +11,7 @@ const {get} = dotProp;
 async function run(pkg) {
 	const filepath = tempWrite.sync(JSON.stringify(pkg), 'package.json');
 
-	await xoInit({
+	await createXo({
 		cwd: path.dirname(filepath),
 		skipInstall: true
 	});
@@ -161,12 +157,12 @@ test('has everything covered when it comes to config', async t => {
 
 test('installs the XO dependency', async t => {
 	const filepath = tempWrite.sync(JSON.stringify({}), 'package.json');
-	await xoInit({cwd: path.dirname(filepath)});
+	await createXo({cwd: path.dirname(filepath)});
 	t.truthy(get(JSON.parse(fs.readFileSync(filepath, 'utf8')), 'devDependencies.xo'));
 });
 
 test('installs via yarn if there\'s a lockfile', async t => {
 	const yarnLock = tempWrite.sync('', 'yarn.lock');
-	await xoInit({cwd: path.dirname(yarnLock)});
+	await createXo({cwd: path.dirname(yarnLock)});
 	t.regex(fs.readFileSync(yarnLock, 'utf8'), /xo/);
 });

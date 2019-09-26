@@ -1,30 +1,34 @@
-# xo-init [![Build Status](https://travis-ci.org/xojs/xo-init.svg?branch=master)](https://travis-ci.org/xojs/xo-init)
+# create-xo [![Build Status](https://travis-ci.org/xojs/create-xo.svg?branch=master)](https://travis-ci.org/xojs/create-xo)
 
 > Add [XO](https://github.com/xojs/xo) to your project
 
 
-## Install
+## CLI
 
 ```
-$ npm install xo-init
+$ npm init xo [options]
 ```
 
+Example:
 
-## Usage
-
-```js
-const xoInit = require('xo-init');
-
-(async () => {
-	await xoInit();
-	console.log('Done');
-})();
+```
+$ npm init xo --space --no-semicolon
 ```
 
 
 ## API
 
-### xoInit(options?)
+### Usage
+
+```js
+const createXo = require('create-xo');
+
+(async () => {
+	await createXo();
+})();
+```
+
+### createXo(options?)
 
 Returns a `Promise`.
 
@@ -59,8 +63,3 @@ For instance, with the arguments `['--space', '--env=node']` the following will 
 	}
 }
 ```
-
-
-## CLI
-
-Install XO globally `$ npm install --global xo` and run `$ xo --init [<options>]`.

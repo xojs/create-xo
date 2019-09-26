@@ -1,9 +1,9 @@
 {
-	"name": "xo-init",
+	"name": "create-xo",
 	"version": "0.7.0",
 	"description": "Add XO to your project",
 	"license": "MIT",
-	"repository": "xojs/xo-init",
+	"repository": "xojs/create-xo",
 	"author": {
 		"name": "Sindre Sorhus",
 		"email": "sindresorhus@gmail.com",
