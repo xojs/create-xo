@@ -1,4 +1,4 @@
-# create-xo [![Build Status](https://travis-ci.org/xojs/create-xo.svg?branch=master)](https://travis-ci.org/xojs/create-xo)
+# create-xo
 
 > Add [XO](https://github.com/xojs/xo) to your project
 
