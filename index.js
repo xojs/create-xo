@@ -1,20 +1,18 @@
-'use strict';
-const path = require('path');
-const minimist = require('minimist');
-const arrify = require('arrify');
-const argv = require('the-argv');
-const pathExists = require('path-exists');
-const readPkgUp = require('read-pkg-up');
-const writePkg = require('write-pkg');
-const execa = require('execa');
-const hasYarn = require('has-yarn');
+import process from 'node:process';
+import path from 'node:path';
+import fs from 'node:fs';
+import minimist from 'minimist';
+import {readPackageUpSync} from 'read-pkg-up';
+import {writePackageSync} from 'write-pkg';
+import execa from 'execa';
+import hasYarn from 'has-yarn';
 
 const DEFAULT_TEST_SCRIPT = 'echo "Error: no test specified" && exit 1';
 
 const PLURAL_OPTIONS = [
 	'env',
 	'global',
-	'ignore'
+	'ignore',
 ];
 
 const CONFIG_FILES = [
@@ -26,7 +24,7 @@ const CONFIG_FILES = [
 	'.jshintrc',
 	'.jscsrc',
 	'.jscs.json',
-	'.jscs.yaml'
+	'.jscs.yaml',
 ];
 
 const buildTestScript = test => {
@@ -43,7 +41,7 @@ const buildTestScript = test => {
 };
 
 const warnConfigFile = packageCwd => {
-	const files = CONFIG_FILES.filter(file => pathExists.sync(path.join(packageCwd, file)));
+	const files = CONFIG_FILES.filter(file => fs.existsSync(path.join(packageCwd, file)));
 
 	if (files.length === 0) {
 		return;
@@ -52,33 +50,38 @@ const warnConfigFile = packageCwd => {
 	console.log(`${files.join(' & ')} can probably be deleted now that you're using XO.`);
 };
 
-module.exports = async (options = {}) => {
-	const packageResult = readPkgUp.sync({
+export default async function createXo(options = {}) {
+	const {
+		packageJson = {},
+		path: packagePath = path.resolve(options.cwd || '', 'package.json'),
+	} = readPackageUpSync({
 		cwd: options.cwd,
-		normalize: false
+		normalize: false,
 	}) || {};
-	const packageJson = packageResult.package || {};
-	const packagePath = packageResult.path || path.resolve(options.cwd || '', 'package.json');
+
 	const packageCwd = path.dirname(packagePath);
 
 	packageJson.scripts = packageJson.scripts || {};
 	packageJson.scripts.test = buildTestScript(packageJson.scripts.test);
 
-	const cli = minimist(options.args || argv());
+	const cli = minimist(options.args || process.argv.slice(2));
 	delete cli._;
 
 	for (const option of PLURAL_OPTIONS) {
 		if (cli[option]) {
-			cli[`${option}s`] = arrify(cli[option]);
+			cli[`${option}s`] = [cli[option]].flat();
 			delete cli[option];
 		}
 	}
 
 	if (Object.keys(cli).length > 0) {
-		packageJson.xo = {...packageJson.xo, ...cli};
+		packageJson.xo = {
+			...packageJson.xo,
+			...cli,
+		};
 	}
 
-	writePkg.sync(packagePath, packageJson);
+	writePackageSync(packagePath, packageJson);
 
 	const post = () => {
 		warnConfigFile(packageCwd);
@@ -107,4 +110,4 @@ module.exports = async (options = {}) => {
 
 	await execa('npm', ['install', '--save-dev', 'xo'], {cwd: packageCwd});
 	post();
-};
+}

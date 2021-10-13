@@ -1,11 +1,12 @@
-import path from 'path';
-import fs from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
+import process from 'node:process';
 import tempWrite from 'temp-write';
 import dotProp from 'dot-prop';
 import test from 'ava';
-import createXo from '.';
+import createXo from './index.js';
 
-const originalArgv = process.argv.slice();
+const originalArgv = [...process.argv];
 const {get} = dotProp;
 
 async function run(pkg) {
@@ -13,7 +14,7 @@ async function run(pkg) {
 
 	await createXo({
 		cwd: path.dirname(filepath),
-		skipInstall: true
+		skipInstall: true,
 	});
 
 	return JSON.parse(fs.readFileSync(filepath, 'utf8'));
@@ -28,8 +29,8 @@ test('empty package.json', async t => {
 test('has scripts', async t => {
 	const pkg = await run({
 		scripts: {
-			start: ''
-		}
+			start: '',
+		},
 	});
 
 	t.is(get(pkg, 'scripts.test'), 'xo');
@@ -39,8 +40,8 @@ test('has scripts', async t => {
 test('has default test', async t => {
 	const pkg = await run({
 		scripts: {
-			test: 'echo "Error: no test specified" && exit 1'
-		}
+			test: 'echo "Error: no test specified" && exit 1',
+		},
 	});
 
 	t.is(get(pkg, 'scripts.test'), 'xo');
@@ -50,8 +51,8 @@ test('has default test', async t => {
 test('has only xo', async t => {
 	const pkg = await run({
 		scripts: {
-			test: 'xo'
-		}
+			test: 'xo',
+		},
 	});
 
 	t.is(get(pkg, 'scripts.test'), 'xo');
@@ -61,8 +62,8 @@ test('has only xo', async t => {
 test('has test', async t => {
 	const pkg = await run({
 		scripts: {
-			test: 'ava'
-		}
+			test: 'ava',
+		},
 	});
 
 	t.is(get(pkg, 'scripts.test'), 'xo && ava');
@@ -70,12 +71,12 @@ test('has test', async t => {
 });
 
 test('has cli args', async t => {
-	process.argv = originalArgv.concat(['--space']);
+	process.argv = [...originalArgv, '--space'];
 
 	const pkg = await run({
 		scripts: {
-			start: ''
-		}
+			start: '',
+		},
 	});
 
 	process.argv = originalArgv;
@@ -84,12 +85,12 @@ test('has cli args', async t => {
 });
 
 test('has cli args and test', async t => {
-	process.argv = originalArgv.concat(['--env=node', '--env=browser']);
+	process.argv = [...originalArgv, '--env=node', '--env=browser'];
 
 	const pkg = await run({
 		scripts: {
-			test: 'ava'
-		}
+			test: 'ava',
+		},
 	});
 
 	process.argv = originalArgv;
@@ -99,12 +100,12 @@ test('has cli args and test', async t => {
 });
 
 test('has cli args and existing config', async t => {
-	process.argv = originalArgv.concat(['--space']);
+	process.argv = [...originalArgv, '--space'];
 
 	const pkg = await run({
 		xo: {
-			esnext: true
-		}
+			esnext: true,
+		},
 	});
 
 	process.argv = originalArgv;
@@ -118,8 +119,8 @@ test('has existing config without cli args', async t => {
 
 	const pkg = await run({
 		xo: {
-			esnext: true
-		}
+			esnext: true,
+		},
 	});
 
 	process.argv = originalArgv;
@@ -128,7 +129,7 @@ test('has existing config without cli args', async t => {
 });
 
 test('has everything covered when it comes to config', async t => {
-	process.argv = originalArgv.concat([
+	process.argv = [...originalArgv,
 		'--space',
 		'--esnext',
 		'--no-semicolon',
@@ -137,8 +138,7 @@ test('has everything covered when it comes to config', async t => {
 		'--global=foo',
 		'--global=bar',
 		'--ignore=foo',
-		'--ignore=bar'
-	]);
+		'--ignore=bar'];
 
 	const pkg = await run({});
 

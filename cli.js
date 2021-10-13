@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-'use strict';
-const createXo = require('.');
+import process from 'node:process';
+import createXo from './index.js';
 
 createXo({
-	args: process.argv.slice(2)
+	args: process.argv.slice(2),
 });
