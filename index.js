@@ -94,8 +94,12 @@ export default async function createXo(options = {}) {
 
 	if (hasYarn(packageCwd)) {
 		try {
-			await execa('yarn', ['add', '--dev', '--ignore-workspace-root-check', 'xo'], {cwd: packageCwd});
-			post();
+			const version = parseFloat(await execa('yarn', ['--version'], {cwd: packageCwd}));
+			if (version < 2) {
+				await execa('yarn', ['add', '--dev', '--ignore-workspace-root-check', 'xo'], {cwd: packageCwd});
+			} else {
+				await execa('yarn', ['add', '--dev', 'xo'], {cwd: packageCwd});
+			}
 		} catch (error) {
 			if (error.code === 'ENOENT') {
 				console.error('This project uses Yarn but you don\'t seem to have Yarn installed.\nRun `npm install --global yarn` to install it.');
