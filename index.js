@@ -94,12 +94,9 @@ export default async function createXo(options = {}) {
 
 	if (hasYarn(packageCwd)) {
 		try {
-			const version = parseFloat(await execa('yarn', ['--version'], {cwd: packageCwd}));
-			if (version < 2) {
-				await execa('yarn', ['add', '--dev', '--ignore-workspace-root-check', 'xo'], {cwd: packageCwd});
-			} else {
-				await execa('yarn', ['add', '--dev', 'xo'], {cwd: packageCwd});
-			}
+			const version = Number.parseFloat(await execa('yarn', ['--version'], {cwd: packageCwd}));
+			const arguments_ = version > 1 ? ['add', '--dev', 'xo'] : ['add', '--dev', '--ignore-workspace-root-check', 'xo'];
+			await execa('yarn', arguments_, {cwd: packageCwd});
 			post();
 		} catch (error) {
 			if (error.code === 'ENOENT') {
