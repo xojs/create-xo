@@ -100,6 +100,7 @@ export default async function createXo(options = {}) {
 			} else {
 				await execa('yarn', ['add', '--dev', 'xo'], {cwd: packageCwd});
 			}
+			post();
 		} catch (error) {
 			if (error.code === 'ENOENT') {
 				console.error('This project uses Yarn but you don\'t seem to have Yarn installed.\nRun `npm install --global yarn` to install it.');
