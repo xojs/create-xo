@@ -68,9 +68,9 @@ export default async function createXo(options = {}) {
 	delete cli._;
 
 	const dependencies = packageJson.dependencies || {};
-	const isVue = Boolean(dependencies.vue) || Boolean(cli.vue);
-	const isReact = Boolean(dependencies.react) || Boolean(cli.react);
-	const makeConfigFile = Boolean(cli.config);
+	const isVueProject = Boolean(dependencies.vue) || Boolean(cli.vue);
+	const isReactProject = Boolean(dependencies.react) || Boolean(cli.react);
+	const createConfigFile = Boolean(cli.config);
 	delete cli.vue;
 	delete cli.react;
 	delete cli.config;
@@ -95,8 +95,8 @@ export default async function createXo(options = {}) {
 		warnConfigFile(packageCwd);
 	};
 
-	if (makeConfigFile) {
-		writeConfigFile(path.join(packageCwd, '.xo-config.cjs'), {isVue, isReact});
+	if (createConfigFile) {
+		writeConfigFile(path.join(packageCwd, '.xo-config.cjs'), {isVue: isVueProject, isReact: isReactProject});
 	}
 
 	if (options.skipInstall) {
@@ -106,9 +106,9 @@ export default async function createXo(options = {}) {
 
 	const packages = [
 		'xo',
-		isVue && 'eslint-config-xo-vue',
-		isReact && 'eslint-config-xo-react',
-		makeConfigFile && 'eslint-define-config',
+		isVueProject && 'eslint-config-xo-vue',
+		isReactProject && 'eslint-config-xo-react',
+		createConfigFile && 'eslint-define-config',
 	].filter(Boolean);
 
 	if (hasYarn(packageCwd)) {
