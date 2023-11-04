@@ -14,7 +14,7 @@
 	"bin": "./cli.js",
 	"exports": "./index.js",
 	"engines": {
-		"node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+		"node": ">=18"
 	},
 	"scripts": {
 		"test": "xo && ava"
@@ -35,16 +35,19 @@
 		"xo"
 	],
 	"dependencies": {
-		"execa": "^5.1.1",
+		"execa": "^8.0.1",
 		"has-yarn": "^3.0.0",
-		"minimist": "^1.2.5",
-		"read-pkg-up": "^9.0.0",
-		"write-pkg": "^5.0.0"
+		"minimist": "^1.2.8",
+		"read-package-up": "^11.0.0",
+		"write-package": "^7.0.0"
 	},
 	"devDependencies": {
-		"ava": "^3.15.0",
-		"dot-prop": "^6.0.1",
+		"ava": "^5.3.1",
+		"dot-prop": "^8.0.2",
 		"temp-write": "^5.0.0",
-		"xo": "^0.45.0"
+		"xo": "^0.56.0"
+	},
+	"ava": {
+		"timeout": "10m"
 	}
 }

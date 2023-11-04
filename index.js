@@ -2,9 +2,9 @@ import process from 'node:process';
 import path from 'node:path';
 import fs from 'node:fs';
 import minimist from 'minimist';
-import {readPackageUpSync} from 'read-pkg-up';
-import {writePackageSync} from 'write-pkg';
-import execa from 'execa';
+import {readPackageUpSync} from 'read-package-up';
+import {writePackageSync} from 'write-package';
+import {execa} from 'execa';
 import hasYarn from 'has-yarn';
 
 const DEFAULT_TEST_SCRIPT = 'echo "Error: no test specified" && exit 1';
